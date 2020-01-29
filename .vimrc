@@ -1,11 +1,10 @@
-"           _           
-"    __   _(_)_ __ ___  
-"    \ \ / / | '_ ` _ \ 
+"           _
+"    __   _(_)_ __ ___
+"    \ \ / / | '_ ` _ \
 "     \ V /| | | | | | |
 "      \_/ |_|_| |_| |_|
-"                       
+"
 colo gruvbox
-
 set bg=dark
 let mapleader = ","
 
@@ -29,6 +28,7 @@ nnoremap <Leader>p :bp<CR>
 nnoremap <Leader>n :bn<CR>
 nnoremap <Leader>w :w<CR>
 nnoremap <Leader>/ :!date \| grep --color=always ':' && mpc<CR>
+nnoremap <C-l> <C-l>zz
 
 " markdown file linewidth rule
 augroup filetype_settings
@@ -134,11 +134,11 @@ set ttimeoutlen=100	" wait up to 100ms after Esc for special key
 "  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
 "augroup END
 
-" Easy pane naviation 
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-h> <C-W>h
-map <C-l> <C-W>l
+" Easy pane naviation
+"map <C-j> <C-W>j
+"map <C-k> <C-W>k
+"map <C-h> <C-W>h
+"map <C-l> <C-W>l
 
 " Quickly move around (and into) command mode
 imap jk <Esc>
@@ -166,11 +166,11 @@ call minpac#add('junegunn/fzf.vim')
 call minpac#add('tpope/vim-surround')
 call minpac#add('tpope/vim-endwise')
 call minpac#add('tpope/vim-fugitive')
+call minpac#add('fatih/vim-go')
 "call minpac#add('michaeljsmith/vim-indent-object')
 "call minpac#add('easymotion/vim-easymotion')
 
 "call minpac#add('neoclide/coc.nvim', { 'rev': '*', 'do': { -> pack#coc_install() } })
-"call minpac#add('fatih/vim-go')
 "let g:fzf_command_prefix = 'Fz'
 
 " minpac utility commands
@@ -183,3 +183,5 @@ endif
 set backupdir=.backup/,~/.backup/,/tmp//
 set directory=.swp/,~/.swp/,/tmp//
 set undodir=.undo/,~/.undo/,/tmp//
+highlight TrailingWhitespace ctermbg=red
+call matchadd('TrailingWhitespace', '\s\+$')
