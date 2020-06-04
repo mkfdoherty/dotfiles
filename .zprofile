@@ -5,6 +5,10 @@
 export PATH=$PATH:$HOME/.scripts
 export PATH=$PATH:$HOME/bin/
 
+export GOPATH=/Users/$USER/go
+export PATH=$GOPATH/bin:$PATH
+
+
 export EDITOR="vim"
 export TERMINAL="st"
 export BROWSER="firefox"
@@ -52,3 +56,5 @@ gm=38;5;203:ga=38;5;111:xa=38;5;239:*.ts=00"
 
 # Switch escape and caps if tty:
 #sudo -n loadkeys ~/.local/bin/ttymaps.kmap 2>/dev/null
+
+export PATH="$HOME/.cargo/bin:$PATH"

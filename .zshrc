@@ -29,7 +29,7 @@ vcs_info_wrapper() {
     echo "%{$fg[grey]%}${vcs_info_msg_0_}%{$reset_color%}$del"
   fi
 }
-export PS1='%F{red}%(?..%? )%f%40<...<%~%<< $(vcs_info_wrapper)%F{cyan}%%%f '
+export PS1='%F{red}%(?..%? )%f%40<...<%~%<< $(vcs_info_wrapper)%F{red}%%%f '
 #export PS1='%F{red}%(?..%? )%f%40<...<%B%~%b%<< $(vcs_info_wrapper)%F{cyan}%%%f '
 #export PS1='%F{red}%(?..%? )%f%40<...<%B%~%b%<< $(vcs_info_wrapper)%% '
 

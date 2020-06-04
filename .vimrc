@@ -5,6 +5,7 @@
 "      \_/ |_|_| |_| |_|
 "
 colo gruvbox
+"colo solarized
 set bg=dark
 let mapleader = ","
 
@@ -39,7 +40,7 @@ augroup filetype_settings
   au BufRead,BufNewFile *.md setlocal textwidth=79 spell spelllang=en_us complete+=kspell
   au BufRead,BufNewFile *.mail setlocal spell spelllang=en_us complete+=kspell
   autocmd BufNewFile,BufReadPost *.md setlocal filetype=markdown
-  "au BufRead,BufNewFile *.tex setlocal spell spelllang=en_us complete+=kspell 
+  "au BufRead,BufNewFile *.tex setlocal spell spelllang=en_us complete+=kspell
   autocmd BufNewFile,BufReadPost aliasrc,ctl* setlocal filetype=sh
   autocmd BufNewFile,BufReadPost spec setlocal filetype=yaml
   autocmd FileType make setlocal noexpandtab
@@ -167,8 +168,17 @@ call minpac#add('tpope/vim-surround')
 call minpac#add('tpope/vim-endwise')
 call minpac#add('tpope/vim-fugitive')
 call minpac#add('fatih/vim-go')
+call minpac#add('rust-lang/rust.vim')
+call minpac#add('prabirshrestha/async.vim')
+call minpac#add('prabirshrestha/vim-lsp')
+call minpac#add('prabirshrestha/asyncomplete.vim')
+call minpac#add('prabirshrestha/asyncomplete-lsp.vim')
+call minpac#add('dense-analysis/ale')
+
 "call minpac#add('michaeljsmith/vim-indent-object')
-"call minpac#add('easymotion/vim-easymotion')
+call minpac#add('easymotion/vim-easymotion')
+"call minpac#add('tpope/vim-abolish')
+"call minpac#add('michaeljsmith/vim-indent-object')
 
 "call minpac#add('neoclide/coc.nvim', { 'rev': '*', 'do': { -> pack#coc_install() } })
 "let g:fzf_command_prefix = 'Fz'
@@ -185,3 +195,21 @@ set directory=.swp/,~/.swp/,/tmp//
 set undodir=.undo/,~/.undo/,/tmp//
 highlight TrailingWhitespace ctermbg=red
 call matchadd('TrailingWhitespace', '\s\+$')
+
+autocmd BufRead *.rs :setlocal tags=./rusty-tags.vi;/,$RUST_SRC_PATH/rusty-tags.vi
+
+let g:LanguageClient_serverCommands = {
+    \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
+    \ 'javascript': ['/usr/local/bin/javascript-typescript-stdio'],
+    \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
+    \ 'python': ['/usr/local/bin/pyls'],
+    \ 'ruby': ['~/.rbenv/shims/solargraph', 'stdio'],
+    \ }
+"set hidden
+"if executable('rls')
+"    au User lsp_setup call lsp#register_server({
+"        \ 'name': 'rls',
+"        \ 'cmd': {server_info->['rustup', 'run', 'nightly', 'rls']},
+"        \ 'whitelist': ['rust'],
+"        \ })
+"endif 
