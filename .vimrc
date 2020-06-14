@@ -123,7 +123,7 @@ set cursorline
 set pastetoggle=<F2>
 set shortmess=I
 set backspace=indent,eol,start
-set scrolloff=15 "defaults.vim is 5
+set scrolloff=10 "defaults.vim is 5
 set hlsearch
 set ttimeout		" time out for key codes
 set ttimeoutlen=100	" wait up to 100ms after Esc for special key
@@ -174,6 +174,7 @@ call minpac#add('prabirshrestha/vim-lsp')
 call minpac#add('prabirshrestha/asyncomplete.vim')
 call minpac#add('prabirshrestha/asyncomplete-lsp.vim')
 call minpac#add('dense-analysis/ale')
+call minpac#add('gruvbox-community/gruvbox')
 
 "call minpac#add('michaeljsmith/vim-indent-object')
 call minpac#add('easymotion/vim-easymotion')
@@ -205,11 +206,3 @@ let g:LanguageClient_serverCommands = {
     \ 'python': ['/usr/local/bin/pyls'],
     \ 'ruby': ['~/.rbenv/shims/solargraph', 'stdio'],
     \ }
-"set hidden
-"if executable('rls')
-"    au User lsp_setup call lsp#register_server({
-"        \ 'name': 'rls',
-"        \ 'cmd': {server_info->['rustup', 'run', 'nightly', 'rls']},
-"        \ 'whitelist': ['rust'],
-"        \ })
-"endif 
