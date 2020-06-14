@@ -9,9 +9,6 @@ _has() {
   return $( command -v $1 >/dev/null 2>&1 )
 }
 
-# Use neovim for vim if present.
-#_has nvim && alias vim="nvim" vimdiff="nvim -d"
-
 # ---------------------------------------------------------------------------------------------------
 # FZF
 # ---------------------------------------------------------------------------------------------------
@@ -120,7 +117,7 @@ alias libr="cd ~/honours/lib && lf"
 alias cless="ccat $1 | less"
 alias mp="ncmpcpp -b $HOME/.ncmpcpp/ncmpcpp.bindings"
 alias m="mpv"
-alias -s {flac,mp3,mp4,mkv,MP4}=mpv
+alias -s {flac,mp3,mp4,mkv,MP4,webm}='mpv --no-config'
 alias alsamixer="alsamixer -g"
 alias nb="newsboat -r"
 alias n='nnn'
@@ -206,10 +203,6 @@ myt() {
 
 setvol() {
     sudo osascript -e "set volume $1"
-}
-
-bright () {
-    brightness "$@"
 }
 
 vf() { fzf | xargs -r -I % $EDITOR % ;}
