@@ -30,6 +30,9 @@ nnoremap <Leader>n :bn<CR>
 nnoremap <Leader>w :w<CR>
 nnoremap <Leader>/ :!date \| grep --color=always ':' && mpc<CR>
 nnoremap <C-l> <C-l>zz
+nnoremap <C-p> :Files<CR>
+
+let g:netrw_banner = 0
 
 " markdown file linewidth rule
 augroup filetype_settings
