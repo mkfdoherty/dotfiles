@@ -11,8 +11,9 @@ export PATH=$GOPATH/bin:$PATH
 
 export EDITOR="vim"
 export TERMINAL="st"
-export BROWSER="firefox"
+export BROWSER="google-chrome-stable"
 export READER="zathura"
+export PAGER="less"
 export FILE="lf"
 export _Z_DATA="$HOME/.config/zdata/z"
 
