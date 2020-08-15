@@ -31,6 +31,7 @@ nnoremap <Leader>w :w<CR>
 nnoremap <Leader>/ :!date \| grep --color=always ':' && mpc<CR>
 nnoremap <C-l> <C-l>zz
 nnoremap <C-p> :Files<CR>
+nnoremap <C-n> :Rg<CR>
 
 let g:netrw_banner = 0
 
