@@ -107,6 +107,7 @@ endif
 filetype plugin indent on
 syntax on
 
+set spell
 set display=truncate
 set showcmd		" display incomplete commands
 set wildmenu		" display completion matches in a status line
