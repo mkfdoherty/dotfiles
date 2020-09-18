@@ -1,9 +1,3 @@
-"           _
-"    __   _(_)_ __ ___
-"    \ \ / / | '_ ` _ \
-"     \ V /| | | | | | |
-"      \_/ |_|_| |_| |_|
-"
 colo gruvbox
 "colo solarized
 set bg=dark
@@ -43,7 +37,7 @@ augroup filetype_settings
 
   au BufRead,BufNewFile *.md setlocal textwidth=79 spell spelllang=en_us complete+=kspell
   au BufRead,BufNewFile *.mail setlocal spell spelllang=en_us complete+=kspell
-  autocmd BufNewFile,BufReadPost *.md setlocal filetype=markdown
+  autocmd BufNewFile,BufReadPost *.md,README setlocal filetype=markdown
   "au BufRead,BufNewFile *.tex setlocal spell spelllang=en_us complete+=kspell
   autocmd BufNewFile,BufReadPost aliasrc,ctl* setlocal filetype=sh
   autocmd BufNewFile,BufReadPost spec setlocal filetype=yaml
@@ -182,9 +176,9 @@ call minpac#add('prabirshrestha/asyncomplete.vim')
 call minpac#add('prabirshrestha/asyncomplete-lsp.vim')
 call minpac#add('dense-analysis/ale')
 call minpac#add('gruvbox-community/gruvbox')
+call minpac#add('easymotion/vim-easymotion')
 
 "call minpac#add('michaeljsmith/vim-indent-object')
-call minpac#add('easymotion/vim-easymotion')
 "call minpac#add('tpope/vim-abolish')
 "call minpac#add('michaeljsmith/vim-indent-object')
 
