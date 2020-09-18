@@ -137,7 +137,7 @@ function chpwd () {
 }
 
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+#[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 alias config='/usr/bin/git --git-dir=/Users/matthewdoherty/.cfg/ --work-tree=/Users/matthewdoherty'
 
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
