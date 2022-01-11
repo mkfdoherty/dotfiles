@@ -379,6 +379,10 @@ vim.api.nvim_exec(
 	  " Balance splits on window resize
 	  autocmd VimResized * wincmd =
 	augroup END
+
+	augroup terminal_settings
+		autocmd TermOpen * setlocal nonumber norelativenumber
+  augroup END
 ]],
   false
 )
