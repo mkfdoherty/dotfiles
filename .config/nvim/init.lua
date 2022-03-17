@@ -12,23 +12,23 @@ vim.cmd [[
   augroup end
 ]]
 
-local use = require('packer').use
-require('packer').startup(function()
+require('packer').startup(function(use)
   use 'wbthomason/packer.nvim' -- Package manager
   use 'tpope/vim-fugitive' -- Git commands in nvim
-  use 'tpope/vim-commentary' -- "gc" to comment visual regions/lines
+  use 'numToStr/Comment.nvim' -- "gc" to comment visual regions/lines
   use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
   use 'ntpeters/vim-better-whitespace' -- Warn on whitespace
   -- UI to select things (files, grep results, open buffers...)
   use { 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' } }
+  use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
   -- Highlight, edit, and navigate code using a fast incremental parsing library
   use {
       'nvim-treesitter/nvim-treesitter',
       run = ':TSUpdate'
   }
-	  -- Add git related info in the signs columns and popups
+    -- Add git related info in the signs columns and popups
   use { 'lewis6991/gitsigns.nvim', requires = { 'nvim-lua/plenary.nvim' } }
-	-- Add indentation guides even on blank lines
+  -- Add indentation guides even on blank lines
   use 'lukas-reineke/indent-blankline.nvim'
   -- Additional textobjects for treesitter
   use 'nvim-treesitter/nvim-treesitter-textobjects'
@@ -39,10 +39,17 @@ require('packer').startup(function()
   use 'L3MON4D3/LuaSnip' -- Snippets plugin
   --Colorscheme
   use 'gruvbox-community/gruvbox'
-	use "onsails/lspkind-nvim"
+  use "onsails/lspkind-nvim"
 
   --statusline
   use 'nvim-lualine/lualine.nvim' -- Fancier statusline
+  use 'arkav/lualine-lsp-progress' -- Integration with progress notifications
+
+  --Language specific
+  use 'darrikonn/vim-gofmt'
+
+  --GPG
+  use 'jamessan/vim-gnupg'
 end)
 
 -- Disable netrw banner
@@ -76,8 +83,12 @@ vim.opt.undofile = true
 vim.o.ignorecase = true
 vim.o.smartcase = true
 
---Set colorscheme (order is important here)
+--Set colorscheme
+vim.o.termguicolors = true
 vim.cmd [[colorscheme gruvbox]]
+
+-- Set completeopt to have a better completion experience
+vim.o.completeopt = 'menuone,noselect'
 
 --Set statusbar
 local gruvbox = require('lualine.themes.gruvbox')
@@ -102,6 +113,9 @@ require('lualine').setup {
   },
 }
 
+--Enable Comment.nvim
+require('Comment').setup()
+
 --Remap space as leader key
 vim.api.nvim_set_keymap('', '<Space>', '<Nop>', { noremap = true, silent = true })
 vim.g.mapleader = ' '
@@ -124,15 +138,12 @@ vim.api.nvim_set_keymap('n', '<Leader>w', ':w<CR>', { noremap = true, silent = t
 vim.api.nvim_set_keymap('n', '<Leader>p', ':set spell!<CR>', { noremap = true, silent = true })
 
 -- Highlight on yank
-vim.api.nvim_exec(
-  [[
+vim.cmd [[
   augroup YankHighlight
     autocmd!
     autocmd TextYankPost * silent! lua vim.highlight.on_yank()
   augroup end
-]],
-  false
-)
+]]
 
 --Map blankline
 vim.g.indent_blankline_char = '┊'
@@ -143,11 +154,11 @@ vim.g.indent_blankline_show_trailing_blankline_indent = false
 -- Gitsigns
 require('gitsigns').setup {
   signs = {
-    add = { hl = 'GitGutterAdd', text = '+' },
-    change = { hl = 'GitGutterChange', text = '~' },
-    delete = { hl = 'GitGutterDelete', text = '_' },
-    topdelete = { hl = 'GitGutterDelete', text = '‾' },
-    changedelete = { hl = 'GitGutterChange', text = '~' },
+    add = { text = '+' },
+    change = { text = '~' },
+    delete = { text = '_' },
+    topdelete = { text = '‾' },
+    changedelete = { text = '~' },
   },
 }
 
@@ -161,7 +172,19 @@ require('telescope').setup {
       },
     },
   },
+  extensions = {
+    fzf = {
+      override_generic_sorter = true, -- override the generic sorter
+      override_file_sorter = true, -- override the file sorter
+      case_mode = 'smart_case', -- or "ignore_case" or "respect_case"
+      -- the default case_mode is "smart_case"
+    },
+  },
 }
+
+-- Enable telescope fzf native
+require('telescope').load_extension 'fzf'
+
 --Add leader shortcuts for telescope
 vim.api.nvim_set_keymap('n', '<leader><space>', [[<cmd>lua require('telescope.builtin').buffers()<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>sf', [[<cmd>lua require('telescope.builtin').find_files({previewer = false})<CR>]], { noremap = true, silent = true })
@@ -227,11 +250,15 @@ require('nvim-treesitter.configs').setup {
   },
 }
 
+-- Diagnostic keymaps
+vim.api.nvim_set_keymap('n', '<leader>e', '<cmd>lua vim.diagnostic.open_float()<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', { noremap = true, silent = true })
+
 -- LSP settings
 local lspconfig = require 'lspconfig'
 local on_attach = function(_, bufnr)
-  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-
   local opts = { noremap = true, silent = true }
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
@@ -245,10 +272,6 @@ local on_attach = function(_, bufnr)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>e', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>so', [[<cmd>lua require('telescope.builtin').lsp_document_symbols()<CR>]], opts)
   vim.cmd [[ command! Format execute 'lua vim.lsp.buf.formatting()' ]]
 end
@@ -272,15 +295,12 @@ vim.g.indent_blankline_buftype_exclude = { 'terminal', 'nofile' }
 vim.g.indent_blankline_char_highlight = 'LineNr'
 vim.g.indent_blankline_show_trailing_blankline_indent = false
 
--- Set completeopt to have a better completion experience
-vim.o.completeopt = 'menuone,noselect'
-
 -- luasnip setup
 local luasnip = require 'luasnip'
 
 -- lspkind setup
 local lspkind = require 'lspkind'
-lspkind.init()
+lspkind.init({ mode = "symbol_text" })
 
 -- nvim-cmp setup
 local cmp = require 'cmp'
@@ -305,7 +325,7 @@ cmp.setup {
       if cmp.visible() then
         cmp.select_next_item()
       elseif luasnip.expand_or_jumpable() then
-				luasnip.expand_or_jump()
+        luasnip.expand_or_jump()
       else
         fallback()
       end
@@ -314,7 +334,7 @@ cmp.setup {
       if cmp.visible() then
         cmp.select_prev_item()
       elseif luasnip.jumpable(-1) then
-				luasnip.jump(-1)
+        luasnip.jump(-1)
       else
         fallback()
       end
@@ -325,64 +345,60 @@ cmp.setup {
     { name = 'luasnip' },
   },
 
-	formatting = {
+  formatting = {
     format = lspkind.cmp_format({with_text = true, maxwidth = 50})
   },
 }
+-- vim: ts=2 sts=2 sw=2 et
 
-vim.api.nvim_exec(
-  [[
-	augroup filetype_settings
-	  " Clear this autocmd group so that the settings won't get loaded over and
-	  " over again
-	  autocmd!
+vim.cmd [[
+  augroup filetype_settings
+    " Clear this autocmd group so that the settings won't get loaded over and
+    " over again
+    autocmd!
 
-	  autocmd BufNewFile,BufReadPost aliasrc,ctl* setlocal filetype=sh
-	  autocmd BufNewFile,BufReadPost spec setlocal filetype=yaml
-	  autocmd BufNewFile,BufReadPost *.md,README,~/.local/share/nota/* setlocal filetype=markdown
+    autocmd BufNewFile,BufReadPost aliasrc,ctl* setlocal filetype=sh
+    autocmd BufNewFile,BufReadPost spec setlocal filetype=yaml
+    autocmd BufNewFile,BufReadPost *.md,README,~/.local/share/nota/* setlocal filetype=markdown
 
-	  for filetype in ['yaml', 'sql', 'ruby', 'html', 'css', 'xml', 'php', 'vim', 'lua']
-	    exe 'autocmd FileType ' . filetype . ' setlocal sw=2 sts=2 ts=2'
-	  endfor
+    for filetype in ['yaml', 'sql', 'ruby', 'html', 'css', 'xml', 'php', 'vim', 'lua']
+      exe 'autocmd FileType ' . filetype . ' setlocal sw=2 sts=2 ts=2'
+    endfor
 
-	  for filetype in ['go']
-	    exe 'autocmd FileType ' . filetype . ' setlocal textwidth=99 shiftwidth=8'
-	  endfor
+    for filetype in ['go']
+      exe 'autocmd FileType ' . filetype . ' setlocal textwidth=99 shiftwidth=8'
+    endfor
 
-	  for filetype in ['rs']
-	    exe 'autocmd FileType ' . filetype . ' setlocal textwidth=99 shiftwidth=4 tabstop=4 expandtab'
-	  endfor
+    for filetype in ['rs']
+      exe 'autocmd FileType ' . filetype . ' setlocal textwidth=99 shiftwidth=4 tabstop=4 expandtab'
+    endfor
 
-	  for filetype in ['markdown']
-	    exe 'autocmd FileType ' . filetype . ' setlocal spell textwidth=79 shiftwidth=4 tabstop=4 softtabstop=4 expandtab'
-	  endfor
+    for filetype in ['markdown']
+      exe 'autocmd FileType ' . filetype . ' setlocal spell textwidth=79 shiftwidth=4 tabstop=4 softtabstop=4 expandtab'
+    endfor
 
-		" Don't restore last file position for git buffers
-		autocmd BufWinEnter */.git/* normal! gg0
+    " Don't restore last file position for git buffers
+    autocmd BufWinEnter */.git/* normal! gg0
 
-	augroup END
-
-	augroup modechange_settings
-	  autocmd!
-
-	  " Clear search context when entering insert mode, which implicitly stops the
-	  " highlighting of whatever was searched for with hlsearch on. It should also
-	  " not be persisted between sessions.
-	  autocmd InsertEnter * let @/ = ''
-	  autocmd BufReadPre,FileReadPre * let @/ = ''
-
-	  autocmd InsertLeave * setlocal nopaste
-
-	  " Jump to last position in file
-	  autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-
-	  " Balance splits on window resize
-	  autocmd VimResized * wincmd =
-	augroup END
-
-	augroup terminal_settings
-		autocmd TermOpen * setlocal nonumber norelativenumber
   augroup END
-]],
-  false
-)
+
+  augroup modechange_settings
+    autocmd!
+
+    autocmd TermOpen * setlocal nonumber norelativenumber
+
+    " Clear search context when entering insert mode, which implicitly stops the
+    " highlighting of whatever was searched for with hlsearch on. It should also
+    " not be persisted between sessions.
+    autocmd InsertEnter * let @/ = ''
+    autocmd BufReadPre,FileReadPre * let @/ = ''
+
+    autocmd InsertLeave * setlocal nopaste
+
+    " Jump to last position in file
+    autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+
+    " Balance splits on window resize
+    autocmd VimResized * wincmd =
+  augroup END
+]]

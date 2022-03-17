@@ -9,13 +9,17 @@ export GOPATH=/Users/$USER/go
 export PATH=$GOPATH/bin:$PATH
 
 
-export EDITOR="vim"
-export TERMINAL="st"
+export EDITOR="nvim"
+export TERMINAL="kitty"
 export BROWSER="google-chrome-stable"
 export READER="zathura"
 export PAGER="less"
 export FILE="lf"
-export _Z_DATA="$HOME/.config/zdata/z"
+# Enable nota GPG support
+export GPG=1
+export PGP_EDITOR="nvim"
+GPG_TTY=`tty`
+export GPG_TTY
 
 export CLICOLOR=1
 

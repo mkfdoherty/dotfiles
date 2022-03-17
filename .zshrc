@@ -117,27 +117,17 @@ bindkey '^xe' edit-command-line
 if [[ "${terminfo[kcbt]}" != "" ]]; then
   bindkey "${terminfo[kcbt]}" reverse-menu-complete   # [Shift-Tab] - move through the completion menu backwards
 fi
-#function precmd () {
-#  window_title="\033]0;${PWD}\007"
-#  echo -ne "$window_title"
-#}
-#function precmd () {
-#  window_title="\033]0;${PWD##*/}\007"
-#  echo -ne "$window_title"
-#}
-#DISABLE_AUTO_TITLE="true"
-# Update title on change of directory
-function title-pwd () {
-  window_title="\033]0;${PWD/#$HOME/~}\007"
-  echo -ne "$window_title"
-}
-title-pwd
-function chpwd () {
-    title-pwd
-}
-
 
 #[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 alias config='/usr/bin/git --git-dir=/Users/matthewdoherty/.cfg/ --work-tree=/Users/matthewdoherty'
+eval "$(zoxide init zsh)"
 
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+export TERM="xterm-kitty"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/mkfd/op/gke/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/mkfd/op/gke/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/mkfd/op/gke/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/mkfd/op/gke/google-cloud-sdk/completion.zsh.inc'; fi
+export PATH="/usr/local/opt/libpq/bin:$PATH"
+export PATH="/usr/local/opt/kubernetes-cli@1.22/bin:$PATH"
