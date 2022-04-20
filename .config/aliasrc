@@ -1,3 +1,10 @@
+#           _ _
+#      __ _| (_) __ _ ___ _ __ ___
+#     / _` | | |/ _` / __| '__/ __|
+#    | (_| | | | (_| \__ \ | | (__
+#     \__,_|_|_|\__,_|___/_|  \___|
+#
+
 _has() {
   return $( command -v $1 >/dev/null 2>&1 )
 }
@@ -54,6 +61,7 @@ alias ....="cd ../../.."
 alias .....="cd ../../../.."
 
 
+
 #alias ls="ls -hN --color=auto --group-directories-first"
 #alias la='ls -la'
 #alias ll='ls -l'
@@ -61,10 +69,15 @@ alias .....="cd ../../../.."
 #alias l='ls -l'
 
 alias ls='exa'
+
 alias la='ls -a'
 alias ll='ls -alF'
-#alias lh='ls -hAl'
-alias l='ls -F'
+alias lh='ls -hAl'
+#alias l='ls -F'
+
+alias bats='pmset -g batt | grep -Eo "\d+%" | cut -d% -f1'
+alias vim='nvim'
+alias vi='nvim'
 
 alias exa='exa --group-directories-first'
 alias x='exa -l'
@@ -93,7 +106,6 @@ alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 alias dots='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 alias t='task'
 alias ytv='youtube-viewer -C'
-alias ma='mpv --no-video'
 alias lofi="mpv 'https://www.youtube.com/watch?v=5qap5aO4i9A' --no-resume-playback"
 alias playing="mpv 'https://www.youtube.com/watch?v=5qap5aO4i9A' --no-resume-playback --no-audio --ytdl-format='[height<=?240]'"
 alias lofisleep="mpv 'https://www.youtube.com/watch?v=DWcJFNfaw9c' --no-resume-playback"
@@ -102,28 +114,33 @@ alias playingsleep="mpv 'https://www.youtube.com/watch?v=DWcJFNfaw9c' --no-resum
 #alias ma='clear; mpv --no-video --term-osd-bar'
 alias vol="amixer -M get Master | awk -F'[][]' '{print \$2}' | tail -1 | grep -E '[0-9]|%'"
 alias tsm='transmission-remote'
-alias yt="youtube-dl --verbose --add-metadata -i -o '%(upload_date)s_%(uploader)s - %(title)s - (%(duration)ss) [%(resolution)s] [%(vcodec)s].%(ext)s'"
+alias yt="yt-dlp --verbose --add-metadata -i -o '%(upload_date)s_%(uploader)s - %(title)s - (%(duration)ss) [%(resolution)s] [%(vcodec)s].%(ext)s'"
 alias yta="yt -x -f bestaudio/best"
 alias weather="curl -Ss 'https://wttr.in'"
 alias lck="slock"
 alias libr="cd ~/honours/lib && lf"
 alias cless="ccat $1 | less"
 alias mp="ncmpcpp -b $HOME/.ncmpcpp/ncmpcpp.bindings"
-alias m="mpv"
-alias -s {flac,mp3,mp4,mkv,MP4,webm}='mpv --no-config'
+alias m="minikube"
+alias -s {flac,mp3,mp4,mkv,MP4,webm,m4a,aiff}='mpv --no-config'
 alias alsamixer="alsamixer -g"
 alias nb="newsboat -r"
 alias n='nnn'
 alias d='docker'
 alias sss='sudo systemctl'
-alias p="pacman"
-alias sp="sudo pacman"
+alias p='mpv --no-config *.(flac|mp3|mp4|mkv|MP4|webm|m4a|aiff)'
+alias pa='mpv --no-config --no-video *.(flac|mp3|mp4|mkv|MP4|webm|m4a|aiff) --volume=60'
+alias v='mpv *.(flac|mp3|mp4|mkv|MP4|webm|m4a|aiff)'
 
 alias lless='ll --color=always | less -r'
 
-alias con='blueutil --connect 38-18-4c-bf-2e-6a'
-alias dis='blueutil --disconnect 38-18-4c-bf-2e-6a'
-alias hd="blueutil --info 38-18-4c-bf-2e-6a | egrep 'not connected|connected'"
+#alias con='blueutil --connect 38-18-4c-bf-2e-6a; hd'
+#alias dis='blueutil --disconnect 38-18-4c-bf-2e-6a; hd'
+#alias hd="blueutil --info 38-18-4c-bf-2e-6a | egrep 'not connected|connected'"
+
+alias con='blueutil --connect 00-1b-66-cd-f2-c3; hd'
+alias dis='blueutil --disconnect 00-1b-66-cd-f2-c3; hd'
+alias hd="blueutil --info 00-1b-66-cd-f2-c3 | egrep 'not connected|connected'"
 
 alias k='kubectl'
 
@@ -138,6 +155,7 @@ alias gst='git status'
 alias rgc='rg --color=always'
 
 alias songinfo='file "music/$(mpc current -f %file%)"'
+alias btm='btm --color gruvbox'
 
 # ---------------------------------------------------------------------------------------------------
 #  FUNCTIONS
@@ -187,6 +205,12 @@ qwall() {
 lossless2mp3() {
     for i in *.flac *.wav; do 
         ffmpeg -vsync 2 -i "$i" -ab 320k "${i%.*}.mp3"
+    done
+}
+
+m4a2flac() {
+    for song in *.m4a *M4A; do
+        ffmpeg -i "$song" -f flac "${song%.*}.flac"
     done
 }
 
@@ -272,9 +296,49 @@ dpac () {
     pacman -Si $@ | awk -F'[:<=>]' '/^Depends/ {print $2}' | xargs -n1 | sort -u
 }
 
+ma() {
+    pushd .
+    cd ~/audio
+    mpv --no-config \
+        --volume=100 \
+        --no-video \
+        "$(fd --color always \
+        --type directory \
+        | fzf -m)"
+    popd
+}
+
+mc() {
+    pushd .
+    cd ~/ssdl/complete
+    mpv --no-config \
+        --volume=100 \
+        --no-video \
+        "$(fd --color always \
+        --type directory \
+        | fzf -m)"
+    popd
+}
+
+ms() {
+    pushd .
+    cd ~/audio
+    mpv --no-config \
+        --volume=50 \
+        --no-video \
+        "$(fd --color always \
+        --extension mp3 \
+        --extension flac \
+        | fzf -m)"
+    popd
+}
+
 dlpac () {
     pacman -Qi $@ | awk -F'[:<=>]' '/^Depends/ {print $2}' | xargs -n1 | sort -u
 }
-alias ctags="`brew --prefix`/bin/ctags"
 export RUST_SRC_PATH=$(rustc --print sysroot)/lib/rustlib/src/rust/src/
 export PATH=$PATH:/usr/local/Cellar/openvpn/2.4.8/sbin/
+
+batdiff() {
+    git diff --name-only --diff-filter=d | xargs bat --diff
+}
