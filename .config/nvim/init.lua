@@ -34,7 +34,7 @@ require('packer').startup(function(use)
   use 'saadparwaiz1/cmp_luasnip'
   use 'L3MON4D3/LuaSnip' -- Snippets plugin
   --Colorscheme
-  use 'gruvbox-community/gruvbox'
+  use "projekt0n/github-nvim-theme"
   use "onsails/lspkind-nvim"
 
   --statusline
@@ -81,21 +81,23 @@ vim.o.smartcase = true
 
 --Set colorscheme
 vim.o.termguicolors = true
-vim.cmd [[colorscheme gruvbox]]
+require('github-theme').setup({
+	theme_style = "dark_default",
+})
 
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menuone,noselect'
 
 --Set statusbar
-local gruvbox = require('lualine.themes.gruvbox')
-for _, mode in pairs(gruvbox) do
+local github = require('lualine.themes.github_dark_default')
+for _, mode in pairs(github) do
   mode.a.gui = nil
 end
 
 require('lualine').setup {
   options = {
     icons_enabled = false,
-    theme = gruvbox,
+    theme = github,
     component_separators = '|',
     section_separators = '',
   },
@@ -282,7 +284,7 @@ end
 
 -- nvim-cmp supports additional completion capabilities
 local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 -- Enable the following language servers
 local servers = { 'clangd', 'rust_analyzer', 'pyright', 'gopls' }

@@ -1,17 +1,7 @@
-#           _ _
-#      __ _| (_) __ _ ___ _ __ ___
-#     / _` | | |/ _` / __| '__/ __|
-#    | (_| | | | (_| \__ \ | | (__
-#     \__,_|_|_|\__,_|___/_|  \___|
-#
-
 _has() {
   return $( command -v $1 >/dev/null 2>&1 )
 }
 
-# ---------------------------------------------------------------------------------------------------
-# FZF
-# ---------------------------------------------------------------------------------------------------
 if _has fd; then
     export FZF_DEFAULT_COMMAND='fd --color=always --type f --hidden --follow --exclude .git'
     export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
@@ -19,33 +9,6 @@ if _has fd; then
     export FZF_DEFAULT_OPTS="--ansi"
     export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
 fi
-
-# Z intergration with FZF
-unalias z 2> /dev/null
-z() {
-  [ $# -gt 0 ] && _z "$*" && return
-  builtin cd "$(_z -l 2>&1 | fzf --height 40% --nth 2.. --reverse --inline-info +s --tac --query "${*##-* }" | sed 's/^[0-9,.]* *//')"
-}
-
-# fzf mpc
-fmpc() {
-    local song_position
-    song_position=$(mpc -f "%position%) %artist% - %title%" playlist | \
-        fzf-tmux --query="$1" --reverse --select-1 --exit-0 | \
-        sed -n 's/^\([0-9]\+\)).*/\1/p') || return 1
-    [ -n "$song_position" ] && mpc -q play $song_position
-}
-
-pfzf() {
-    fzf --preview '[[ $(file --mime {}) =~ binary ]] &&
-                     echo {} is a binary file ||
-                     (bat --style=numbers --color=always {} ||
-                      highlight -O ansi -l {} ||
-                      coderay {} ||
-                      rougify {} ||
-                      cat {}) 2> /dev/null | head -500'
-}
-
 
 export MANPATH=/usr/share/man
 man-find() {
@@ -55,290 +18,43 @@ man-find() {
 # ---------------------------------------------------------------------------------------------------
 #  ALIASES
 # ---------------------------------------------------------------------------------------------------
+
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
 
+# alias ls='exa --group-directories-first'
+# alias ll='ls -laF'
+# alias la='ls -a'
+# alias l='ls -F'
 
+if hash exa 2>/dev/null; then
+    alias ls='exa --group-directories-first'
+    alias l='exa -l --all --group-directories-first --git'
+    alias ll='exa -l --all --all --group-directories-first --git'
+    alias lt='exa -T --git-ignore --level=2 --group-directories-first'
+    alias llt='exa -lT --git-ignore --level=2 --group-directories-first'
+    alias lT='exa -T --git-ignore --level=4 --group-directories-first'
+else
+    alias l='ls -lah'
+    alias ll='ls -alF'
+    alias la='ls -A'
+fi
 
-#alias ls="ls -hN --color=auto --group-directories-first"
-#alias la='ls -la'
-#alias ll='ls -l'
-#alias lh='ls -hAl'
-#alias l='ls -l'
+alias d="docker"
+alias k="kubectl"
+alias g='git'
+alias by="bat -l yaml"
 
-alias ls='exa'
-
-alias la='ls -a'
-alias ll='ls -alF'
-alias lh='ls -hAl'
-#alias l='ls -F'
-
-alias bats='pmset -g batt | grep -Eo "\d+%" | cut -d% -f1'
 alias vim='nvim'
 alias vi='nvim'
 
-alias exa='exa --group-directories-first'
-alias x='exa -l'
-alias xs='exa'
-alias xl='exa -lg'
-alias xa='exa -la'
-alias xla='exa -lag'
-alias xx='exa -lag'
-alias xxl='exa --color=always -lag | less'
+alias watch='watch -n 1'
 
-alias grep="grep --color=auto"
-alias egrep="egrep --color=auto"
-
-alias sbrc='source ~/.bashrc'
-
-alias zpac="pacman -Sl | cut -d' ' -f2 | fzf -m --preview 'pacman -Si {1}'"
-alias za="zathura --fork"
-alias ccat='highlight --out-format=ansi'
-#alias c='cd'
-alias xc="tr -d '\n' |  xclip -selection clipboard"
-alias xcall="xclip -selection clipboard"
-#alias v='$EDITOR'
-alias gt='gotop'
-alias qute='cd $HOME/.config/qutebrowser/'
-alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
-alias dots='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
-alias t='task'
-alias ytv='youtube-viewer -C'
-alias lofi="mpv 'https://www.youtube.com/watch?v=5qap5aO4i9A' --no-resume-playback"
-alias playing="mpv 'https://www.youtube.com/watch?v=5qap5aO4i9A' --no-resume-playback --no-audio --ytdl-format='[height<=?240]'"
-alias lofisleep="mpv 'https://www.youtube.com/watch?v=DWcJFNfaw9c' --no-resume-playback"
-alias playingsleep="mpv 'https://www.youtube.com/watch?v=DWcJFNfaw9c' --no-resume-playback --no-audio --ytdl-format='[height<=?240]'"
-
-#alias ma='clear; mpv --no-video --term-osd-bar'
-alias vol="amixer -M get Master | awk -F'[][]' '{print \$2}' | tail -1 | grep -E '[0-9]|%'"
-alias tsm='transmission-remote'
-alias yt="yt-dlp --verbose --add-metadata -i -o '%(upload_date)s_%(uploader)s - %(title)s - (%(duration)ss) [%(resolution)s] [%(vcodec)s].%(ext)s'"
-alias yta="yt -x -f bestaudio/best"
-alias weather="curl -Ss 'https://wttr.in'"
-alias lck="slock"
-alias libr="cd ~/honours/lib && lf"
-alias cless="ccat $1 | less"
-alias mp="ncmpcpp -b $HOME/.ncmpcpp/ncmpcpp.bindings"
-alias m="minikube"
-alias -s {flac,mp3,mp4,mkv,MP4,webm,m4a,aiff}='mpv --no-config'
-alias alsamixer="alsamixer -g"
-alias nb="newsboat -r"
-alias n='nnn'
-alias d='docker'
-alias sss='sudo systemctl'
-alias p='mpv --no-config *.(flac|mp3|mp4|mkv|MP4|webm|m4a|aiff)'
-alias pa='mpv --no-config --no-video *.(flac|mp3|mp4|mkv|MP4|webm|m4a|aiff) --volume=60'
-alias v='mpv *.(flac|mp3|mp4|mkv|MP4|webm|m4a|aiff)'
-
-alias lless='ll --color=always | less -r'
-
-#alias con='blueutil --connect 38-18-4c-bf-2e-6a; hd'
-#alias dis='blueutil --disconnect 38-18-4c-bf-2e-6a; hd'
-#alias hd="blueutil --info 38-18-4c-bf-2e-6a | egrep 'not connected|connected'"
-
-alias con='blueutil --connect 00-1b-66-cd-f2-c3; hd'
-alias dis='blueutil --disconnect 00-1b-66-cd-f2-c3; hd'
-alias hd="blueutil --info 00-1b-66-cd-f2-c3 | egrep 'not connected|connected'"
-
-alias k='kubectl'
-
-# GIT
-alias g='git'
-alias ga='git add'
-alias gcmsg='git commit -m'
-alias gl='git pull'
-alias gp='git push'
-alias gcl='git clone --recursive'
-alias gst='git status'
-alias rgc='rg --color=always'
-
-alias songinfo='file "music/$(mpc current -f %file%)"'
-alias btm='btm --color gruvbox'
 
 # ---------------------------------------------------------------------------------------------------
 #  FUNCTIONS
 # ---------------------------------------------------------------------------------------------------
 
-voice () {
-    tmp=$(vol | grep -o '[0-9]\+')
-    ma ~/dl/*.aac 
-    rm ~/dl/*.aac 
-    setvol $tmp
-}
-
-bitrate () {
-    echo `basename "$1"`: `file "$1" | sed 's/.*, \(.*\)kbps.*/\1/' | tr -d " " ` kbps
-}
-
-..cd () {
-    cd ..
-    cd "$@"
-}
-
-#cd () {
-#    if [ $# -eq 1 ] && [ -f "$1" ] ; then
-#        path=$(dirname "$1")
-#        [ ! -e "$path" ] && return 1
-#        printf '\e[32m%-6s\n\e[m' "$1 -> $path"
-#        builtin cd "$path"
-#    else 
-#        builtin cd "$@"
-#    fi
-#}
-
-c () { [ $# -eq 1 ] && [ -f "$1" ] && ccat --force "$1" || builtin cd "$1" ; }
-
-mkcd() { mkdir -p "$1" && builtin cd "$1" ; } 
-
-7zp () {
-    7z a -p -mx=9 -mhe -t7z "$1.7z" "$1"
-}
-
 calc() { awk "BEGIN {print $*}"; }
-
-qwall() { 
-    ln -sf $(pwd)/$1 $HOME/.config/qutebrowser/startpage/pape
-}
-
-lossless2mp3() {
-    for i in *.flac *.wav; do 
-        ffmpeg -vsync 2 -i "$i" -ab 320k "${i%.*}.mp3"
-    done
-}
-
-m4a2flac() {
-    for song in *.m4a *M4A; do
-        ffmpeg -i "$song" -f flac "${song%.*}.flac"
-    done
-}
-
-myt() {
-    mpv "ytdl://ytsearch:$1"
-}
-
-setvol() {
-    sudo osascript -e "set volume $1"
-}
-
-vf() { fzf | xargs -r -I % $EDITOR % ;}
-
-note () {
-  local notes_dir="$HOME/notes"
-  case "$1" in
-    c)
-      builtin cd "$notes_dir"
-      ;;
-    l)
-      ls "$notes_dir"
-      ;;
-    p)
-      pushd "$notes_dir"
-      msg="Regenerated at $(date -u '+%Y-%m-%d %H:%M:%S')"
-      git add .
-      git commit -m "$msg"
-      git push origin master
-      popd
-      ;;
-    *)
-      vim "$notes_dir/$1"
-  esac
-}
-
-unzipown() { 
-    if [ $# == 0 ]
-    then 
-        for i in *.zip
-        do 
-            unzip "$i" -d "${i%%.zip}"
-        done
-    else
-        for i in $@ 
-        do 
-            unzip "$i" -d "${i%%.zip}"
-        done
-    fi
-}
-
-histdel(){
-    [ $# -ne 2 ] && echo start and end parameters && return 1
-    for h in $(seq $1 $2 | tac); do
-        history -d $h
-    done
-    history -d $(history 1 | awk '{print $1}')
-}
-histdeln(){
-  # Get the current history number
-  n=$(history 1 | awk '{print $1}')
-
-  # Call histdel with the appropriate range
-  histdel $(( $n - $1 )) $(( $n - 1 ))
-  }
-
-sleepUntil() {
-    local slp tzoff now quiet=false
-    [ "$1" = "-q" ] && shift && quiet=true
-    local hms=(${1//:/ })
-    printf -v now '%(%s)T' -1
-    printf -v tzoff '%(%z)T\n' $now
-    tzoff=$((0${tzoff:0:1}(3600*${tzoff:1:2}+60*${tzoff:3:2})))
-    slp=$(((86400+(now-now%86400)+10#$hms*3600+10#${hms[1]}*60+${hms[2]}-tzoff-now)%86400))
-    $quiet || printf 'sleep %ss, -> %(%c)T\n' $slp $((now+slp))
-    sleep $slp
-}
-
-transfer() {
-    curl --upload-file "$1" "https://transfer.sh/$1"
-}
-
-dpac () {
-    pacman -Si $@ | awk -F'[:<=>]' '/^Depends/ {print $2}' | xargs -n1 | sort -u
-}
-
-ma() {
-    pushd .
-    cd ~/audio
-    mpv --no-config \
-        --volume=100 \
-        --no-video \
-        "$(fd --color always \
-        --type directory \
-        | fzf -m)"
-    popd
-}
-
-mc() {
-    pushd .
-    cd ~/ssdl/complete
-    mpv --no-config \
-        --volume=100 \
-        --no-video \
-        "$(fd --color always \
-        --type directory \
-        | fzf -m)"
-    popd
-}
-
-ms() {
-    pushd .
-    cd ~/audio
-    mpv --no-config \
-        --volume=50 \
-        --no-video \
-        "$(fd --color always \
-        --extension mp3 \
-        --extension flac \
-        | fzf -m)"
-    popd
-}
-
-dlpac () {
-    pacman -Qi $@ | awk -F'[:<=>]' '/^Depends/ {print $2}' | xargs -n1 | sort -u
-}
-export RUST_SRC_PATH=$(rustc --print sysroot)/lib/rustlib/src/rust/src/
-export PATH=$PATH:/usr/local/Cellar/openvpn/2.4.8/sbin/
-
-batdiff() {
-    git diff --name-only --diff-filter=d | xargs bat --diff
-}

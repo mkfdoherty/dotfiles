@@ -14,24 +14,11 @@ promptinit
 
 #setopt prompt_subst
 autoload -Uz vcs_info
-zstyle ':vcs_info:*' actionformats \
-    '%F{5}[%F{2}%b%F{3}|%F{1}%a%F{5}]%f'
-zstyle ':vcs_info:*' formats       \
-    '%F{5}[%F{2}%b%F{5}]%f'
-zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b%F{1}:%F{3}%r'
+precmd_vcs_info() { vcs_info }
+precmd_functions+=( precmd_vcs_info )
+zstyle ':vcs_info:git:*' formats '%b '
 
-zstyle ':vcs_info:*' enable git cvs svn
-
-# or use pre_cmd, see man zshcontrib
-vcs_info_wrapper() {
-  vcs_info
-  if [ -n "$vcs_info_msg_0_" ]; then
-    echo "%{$fg[grey]%}${vcs_info_msg_0_}%{$reset_color%}$del"
-  fi
-}
-export PS1='%F{red}%(?..%? )%f%40<...<%~%<< $(vcs_info_wrapper)%F{red}%%%f '
-#export PS1='%F{red}%(?..%? )%f%40<...<%B%~%b%<< $(vcs_info_wrapper)%F{cyan}%%%f '
-#export PS1='%F{red}%(?..%? )%f%40<...<%B%~%b%<< $(vcs_info_wrapper)%% '
+export PS1='%F{red}%(?..%? )%f%40<...<%~%<< %F{blue}${vcs_info_msg_0_}%f%F{red}%%%f '
 
 #colors / completion
 zstyle ':completion:*:default' list-colors "${(s.:.)LS_COLORS}"
@@ -122,7 +109,7 @@ fi
 alias config='/usr/bin/git --git-dir=/Users/matthewdoherty/.cfg/ --work-tree=/Users/matthewdoherty'
 eval "$(zoxide init zsh)"
 
-export TERM="xterm-kitty"
+export TERM="xterm-256color"
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/mkfd/op/gke/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/mkfd/op/gke/google-cloud-sdk/path.zsh.inc'; fi
@@ -131,3 +118,11 @@ if [ -f '/Users/mkfd/op/gke/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/mkf
 if [ -f '/Users/mkfd/op/gke/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/mkfd/op/gke/google-cloud-sdk/completion.zsh.inc'; fi
 export PATH="/usr/local/opt/libpq/bin:$PATH"
 export PATH="/usr/local/opt/kubernetes-cli@1.22/bin:$PATH"
+
+source <(kubectl completion zsh)
+export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR=/usr/local/share/zsh-syntax-highlighting/highlighters
+source /Users/mkfd/git/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+export PATH="/usr/local/sbin:$PATH"
+
+eval "$(starship init zsh)"
+# source /usr/local/opt/spaceship/spaceship.zsh
