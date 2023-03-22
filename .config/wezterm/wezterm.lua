@@ -12,9 +12,9 @@ end
 
 function scheme_for_appearance(appearance)
   if appearance:find 'Dark' then
-    return 'GitHub Dark'
+    return 'github_dark_default'
   else
-    return 'Github'
+    return 'github_light_default'
   end
 end
 
