@@ -125,4 +125,3 @@ source /Users/mkfd/git/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 export PATH="/usr/local/sbin:$PATH"
 
 eval "$(starship init zsh)"
-# source /usr/local/opt/spaceship/spaceship.zsh
